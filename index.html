@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RedbullStratos</title>
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: helvetica;
+      font-size: 11px;
+      position: relative;
+    }
+
+    html, body, #map {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #overlay {
+      background: url('overlay_top.png');
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 600px;
+      height: 600px;
+      display:  none;
+    }
+
+    #vel {
+      position: absolute;
+      top: 307px;
+      left: 110px;
+    }
+
+    #alt{
+      position: absolute;
+      top: 276px;
+      left: 340px;
+    }
+
+    #legend {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-weight: bold;
+      color: white;
+      font-size: 17px;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 10px 20px;
+    }
+
+  </style>
+
+
+  <link rel="stylesheet" href="./dist/leaflet.css" />
+  <!--[if lte IE 8]><link rel="stylesheet" href="./dist/leaflet.ie.css" /><![endif]-->
+</head>
+<body>
+  <div id="map" ></div>
+  <div id="legend">
+    Felix Baumgartner’s supersonic freefall
+  </div>
+  <div id="overlay">
+    <div id="vel">VERTICAL SPEED: <span id="spd">0m/s</span></div>
+    <div id="alt">ALTITUDE: <span id="a">0</span></div>
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script src="./dist/leaflet.js"></script>
+  <script>
+
+
+    var icon = L.icon({
+        iconUrl: 'perico_icon.png',
+        iconSize: [25, 25],
+        iconAnchor: [12, 12]
+    });
+
+    
+    var perico = null;
+
+    setInterval(function() {
+      $.getJSON('http://javi.cartodb.com/api/v1/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
+        var lnglat = data.features[0].geometry.coordinates;
+        var pos = new L.LatLng(lnglat[1], lnglat[0]);
+        if(!perico) {
+
+          var map = L.map('map', {zoomControl: false}).setView(pos, 5);
+
+          L.tileLayer('http://a.tiles.mapbox.com/v3/saleiva.map-3icvoove/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: "<a href='http://mapbox.com/about/maps' target='_blank'>Terms & Feedback</a>",
+          }).addTo(map);
+
+          perico = new L.Marker(new L.LatLng(0, 0), {
+            icon: icon
+          }).addTo(map);
+
+          $('#overlay').show();
+          //map.setView(pos, 7);
+        }
+        perico.setLatLng(pos);
+        //map.panTo(pos);
+        var point = map.latLngToLayerPoint(pos);
+        $('#overlay').css({
+          top: point.y - 300,
+          left: point.x - 300
+        });
+
+        $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
+        $('#a').html(data.features[0].properties.altitudemetric + " m");
+      });
+    }, 2000);
+
+
+
+  </script>
+</body>
+</html>
