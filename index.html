@@ -27,6 +27,7 @@
       width: 600px;
       height: 600px;
       display:  none;
+    /*  pointer-events: none;*/
     }
 
     #vel {
@@ -37,8 +38,8 @@
 
     #alt{
       position: absolute;
-      top: 276px;
-      left: 340px;
+      top: 281px;
+      left: 358px;
     }
 
     #legend {
@@ -74,25 +75,29 @@
 
 
     var icon = L.icon({
-        iconUrl: 'perico_icon.png',
+        iconUrl: 'perico.png',
         iconSize: [25, 25],
         iconAnchor: [12, 12]
     });
 
-    
+
     var perico = null;
 
-    setInterval(function() {
-      $.getJSON('http://javi.cartodb.com/api/v1/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
+    var lastPos;
+    var map;
+    var fn = function() {
+      $.getJSON('http://javi.cartodb.com/api/v2/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
         var lnglat = data.features[0].geometry.coordinates;
         var pos = new L.LatLng(lnglat[1], lnglat[0]);
+        lastPos = pos;
+
         if(!perico) {
 
-          var map = L.map('map', {zoomControl: false}).setView(pos, 5);
+          map = L.map('map', {zoomControl: false, dragging: false}).setView(pos, 5);
 
           L.tileLayer('http://a.tiles.mapbox.com/v3/saleiva.map-3icvoove/{z}/{x}/{y}.png', {
             maxZoom: 18,
-            attribution: "<a href='http://mapbox.com/about/maps' target='_blank'>Terms & Feedback</a>",
+            attribution: "<a href='http://mapbox.com/about/maps' target='_blank'>Mapbox</a>",
           }).addTo(map);
 
           perico = new L.Marker(new L.LatLng(0, 0), {
@@ -101,6 +106,14 @@
 
           $('#overlay').show();
           //map.setView(pos, 7);
+
+          map.on('move', function() {
+            var point = map.latLngToLayerPoint(lastPos);
+            $('#overlay').css({
+              top: point.y - 300,
+              left: point.x - 300
+            });
+          });
         }
         perico.setLatLng(pos);
         //map.panTo(pos);
@@ -109,11 +122,13 @@
           top: point.y - 300,
           left: point.x - 300
         });
+
         var altitudemetric = data.features[0].properties.altitudemetric > 0? data.features[0].properties.altitudemetric : 0;
         $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
-        $('#a').html(altitudemetric + " m");
-      });
-    }, 2000);
+        $('#a').html(altitudemetric + " m");      });
+    }
+    fn();
+    setInterval(fn, 3000);
 
 
   </script>
