@@ -27,6 +27,7 @@
       width: 600px;
       height: 600px;
       display:  none;
+    /*  pointer-events: none;*/
     }
 
     #vel {
@@ -82,13 +83,17 @@
     
     var perico = null;
 
+    var lastPos;
+    var map;
     var fn = function() {
       $.getJSON('http://javi.cartodb.com/api/v2/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
         var lnglat = data.features[0].geometry.coordinates;
         var pos = new L.LatLng(lnglat[1], lnglat[0]);
+        lastPos = pos;
+
         if(!perico) {
 
-          var map = L.map('map', {zoomControl: false}).setView(pos, 5);
+          map = L.map('map', {zoomControl: false, dragging: false}).setView(pos, 5);
 
           L.tileLayer('http://a.tiles.mapbox.com/v3/saleiva.map-3icvoove/{z}/{x}/{y}.png', {
             maxZoom: 18,
@@ -101,6 +106,14 @@
 
           $('#overlay').show();
           //map.setView(pos, 7);
+
+          map.on('move', function() {
+            var point = map.latLngToLayerPoint(lastPos);
+            $('#overlay').css({
+              top: point.y - 300,
+              left: point.x - 300
+            });
+          });
         }
         perico.setLatLng(pos);
         //map.panTo(pos);
