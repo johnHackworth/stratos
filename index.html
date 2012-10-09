@@ -109,9 +109,9 @@
           top: point.y - 300,
           left: point.x - 300
         });
-
+        var altitudemetric = data.features[0].properties.altitudemetric > 0? data.features[0].properties.altitudemetric : 0;
         $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
-        $('#a').html(data.features[0].properties.altitudemetric + " m");
+        $('#a').html(altitudemetric + " m");
       });
     }, 2000);
 
