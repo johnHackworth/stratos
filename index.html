@@ -83,7 +83,7 @@
     var perico = null;
 
     setInterval(function() {
-      $.getJSON('http://javi.cartodb.com/api/v1/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
+      $.getJSON('http://javi.cartodb.com/api/v2/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
         var lnglat = data.features[0].geometry.coordinates;
         var pos = new L.LatLng(lnglat[1], lnglat[0]);
         if(!perico) {
