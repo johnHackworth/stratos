@@ -80,7 +80,7 @@
         iconAnchor: [12, 12]
     });
 
-    
+
     var perico = null;
 
     var lastPos;
@@ -123,9 +123,9 @@
           left: point.x - 300
         });
 
+        var altitudemetric = data.features[0].properties.altitudemetric > 0? data.features[0].properties.altitudemetric : 0;
         $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
-        $('#a').html(data.features[0].properties.altitudemetric + " m");
-      });
+        $('#a').html(altitudemetric + " m");      });
     }
     fn();
     setInterval(fn, 3000);
