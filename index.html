@@ -214,13 +214,20 @@
     var lastPos;
     var map;
     var debugHeight = 32000;
+    var debugSpeed = 0;
     var coordinates = [0,0];
     var fn = function() {
       $.getJSON('http://javi.cartodb.com/api/v2/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
 
         if(window.location.hash === '#debug') {
+          data.features[0].properties.verticalspeedmetric = debugSpeed;
+          debugSpeed += 14;
+          if(debugSpeed > 200) {
+            debugSpeed -= Math.floor(Math.random() * 28)
+          }
           data.features[0].properties.altitudemetric = debugHeight;
-          debugHeight -= 600;
+          debugHeight -= debugSpeed*2;
+
           if(coordinates[0] === 0) {
             coordinates = data.features[0].geometry.coordinates;
           } else {
@@ -261,7 +268,7 @@
           });
         }
         perico.setLatLng(pos);
-        //map.panTo(pos);
+        map.panTo(pos);
         var point = map.latLngToLayerPoint(pos);
         $('#overlay').css({
           top: point.y - 300,
