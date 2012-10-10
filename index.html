@@ -289,7 +289,10 @@
 
         map.panTo(pos);
         perico.setLatLng(pos);
-        setZoomLevel(altitudemetric, map);
+        if(data.features[0].properties.verticalspeedmetric > 0) {
+          // falling
+          setZoomLevel(altitudemetric, map);
+        }
 
         $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
         $('#a').html(altitudemetric + " m");
