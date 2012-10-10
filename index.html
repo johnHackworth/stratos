@@ -235,6 +235,10 @@
             coordinates[0] += (Math.random() -1) * 0.005;
             coordinates[1] += (Math.random() -1) * 0.005;
           }
+          if(debugHeight < 100) {
+            debugHeight = 100;
+            debugSpeed = 0;
+          }
 
         }
 
@@ -268,14 +272,15 @@
           });
         }
         perico.setLatLng(pos);
-        if(map.getZoom() > 12) {
-          map.panTo(pos);
-        }
         var point = map.latLngToLayerPoint(pos);
         $('#overlay').css({
           top: point.y - 300,
           left: point.x - 300
         });
+        if(map.getZoom() > 10) {
+          map.panTo(pos);
+        }
+
 
         var altitudemetric = data.features[0].properties.altitudemetric > 0? data.features[0].properties.altitudemetric : 0;
         $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
