@@ -268,7 +268,9 @@
           });
         }
         perico.setLatLng(pos);
-        map.panTo(pos);
+        if(map.getZoom() > 12) {
+          map.panTo(pos);
+        }
         var point = map.latLngToLayerPoint(pos);
         $('#overlay').css({
           top: point.y - 300,
