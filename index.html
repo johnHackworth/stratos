@@ -174,13 +174,65 @@
       $('#markerHeight').css('top', originPoint - positionY - 10);
     }
 
+    var setZoomLevel = function(altitudemetric, map) {
+      var currentZoom = map.getZoom();
+      if(altitudemetric > 30000) {
+          map.setZoom(6);
+      }
+      else if(altitudemetric > 26000) {
+          map.setZoom(7);
+      }
+      else if(altitudemetric > 20000) {
+          map.setZoom(8);
+      }
+      else if(altitudemetric > 15000) {
+          map.setZoom(9);
+      }
+      else if(altitudemetric > 10000) {
+          map.setZoom(10);
+      }
+      else if(altitudemetric > 5000) {
+          map.setZoom(11);
+      }
+      else if(altitudemetric > 2500) {
+          map.setZoom(12);
+      }
+      else if(altitudemetric > 2000) {
+          map.setZoom(13);
+      }
+      else if(altitudemetric > 1500) {
+          map.setZoom(14);
+      }
+      else if(altitudemetric > 1250) {
+          map.setZoom(15);
+      }
+
+    }
+
     var perico = null;
 
     var lastPos;
     var map;
+    var debugHeight = 32000;
+    var coordinates = [0,0];
     var fn = function() {
       $.getJSON('http://javi.cartodb.com/api/v2/sql?q=select * from stratos order by cartodb_id desc limit 1&format=geojson', function(data) {
+
+        if(window.location.hash === '#debug') {
+          data.features[0].properties.altitudemetric = debugHeight;
+          debugHeight -= 600;
+          if(coordinates[0] === 0) {
+            coordinates = data.features[0].geometry.coordinates;
+          } else {
+            data.features[0].geometry.coordinates = coordinates;
+            coordinates[0] += (Math.random() -1) * 0.005;
+            coordinates[1] += (Math.random() -1) * 0.005;
+          }
+
+        }
+
         var lnglat = data.features[0].geometry.coordinates;
+
         var pos = new L.LatLng(lnglat[1], lnglat[0]);
         lastPos = pos;
 
@@ -220,6 +272,7 @@
         $('#spd').html(data.features[0].properties.verticalspeedmetric + " m/s");
         $('#a').html(altitudemetric + " m");
         setMarkerHeight(altitudemetric);
+        setZoomLevel(altitudemetric, map);
       });
 
     }
